@@ -1,0 +1,123 @@
+version: '3.8'
+
+services:
+
+  gateway:
+    image: gateway:dev
+    ports:
+      - 3000:3000
+    command: npm run start:dev
+    networks:
+      - "RECNetwork"
+
+  auth: 
+    image: auth:2.0
+    command: npm run start:dev
+    depends_on:
+      - auth-db
+    networks:
+      - "RECNetwork"
+
+  meters:
+    image: meters:2.1
+    command: npm run start:dev
+    volumes:
+      - logs:/usr/src/log
+    secrets:
+      - source: meters
+        target: .env
+    networks:
+      - "RECNetwork"
+    depends_on:
+      - influxdb
+    ports:
+      - '5049:5049'
+  
+  sensors:
+    image: sensors:2.0
+    command: npm run start:dev
+    volumes:
+      - logs:/usr/src/log
+    secrets:
+      - source: sensors
+        target: .env
+    networks:
+      - "RECNetwork"
+    depends_on:
+      - influxdb
+  
+  market:
+    image: market
+    networks:
+      - "RECNetwork"
+    ports:
+      - '50050:50050'
+      - '50051:50051'
+    secrets:
+      - source: MarketCrt
+        target: market_crt.pem
+      - source: MarketKey
+        target: market_key.pem
+    
+
+  influxdb:
+    image: influxdb:alpine
+    ports:
+      - '8086:8086'
+    volumes:
+      - /Influx/data:/var/lib/influxdb2
+      - /Influx/config:/etc/influxdb2
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=admin
+      - DOCKER_INFLUXDB_INIT_PASSWORD=adminadmin
+      - DOCKER_INFLUXDB_INIT_ORG=RECNetwork
+      - DOCKER_INFLUXDB_INIT_BUCKET=meter
+    networks:
+      - "RECNetwork"
+
+  transactions:
+    image: transactions:dev
+    command: npm run start:dev
+    volumes:
+      - logs:/usr/src/log
+      - sqlite3:/databases/
+    networks:
+      - "RECNetwork"
+    ports:
+      - '5055:5055'
+    secrets:
+      - source: MarketCrt
+        target: market_crt.pem
+
+  auth-db:
+    image: postgres:alpine
+    environment:
+      POSTGRES_USER: RECNetwork
+      POSTGRES_PASSWORD: RECNetwork
+      POSTGRES_DB: auth
+      PGDATA: /data/postgres
+    volumes:
+      - auth-db:/data/postgres
+    networks:
+      - "RECNetwork"
+
+secrets:
+  meters:
+    external: true
+  sensors:
+    external: true
+  MarketCrt:
+    external: true
+  MarketKey:
+    external: true
+
+volumes:
+  auth-db:
+  logs:
+  sqlite3:
+
+networks:
+  RECNetwork:
+    name: "RECNetwork"
+    external: true
