@@ -4,13 +4,13 @@
 
 ### REC Platform - Gateway API
 
-The Renewable Energy Community Platform consists in an microsservices API to enable and enhance Peer-to-Peer energy Transactions between Prosumers and consumers of a community.
+The Renewable Energy Community Platform consists in a microservices API to enable and enhance Peer-to-Peer energy Transactions between Prosumers and consumers of a community.
 This Repo contains the entrance point of all the API requests.
 
 Why building a REC Platform using microservices:
 * The project was developed together with other devs
 * Changes in one particular module forced to shutdown/reboot the whole API.
-* This is part of a research program, therefore multiple experimental ideas, frameworks and scripts were used. 
+* This is part of a research program, therefore multiple experimental ideas, frameworks, and scripts were used. 
 
 
 <p align="right">(<a href="#readme-top">Back to Top</a>)</p>
@@ -30,7 +30,7 @@ To make the API work, these are the core features of the Gateway:
 
 ## Getting Started
 
-The Gateway does not work by itself, it needs the other microservices in order to work.
+The Gateway does not work by itself, it needs the other microservices to work.
 
 *Note: The gRPC protos import is missing, therefore it will not work!*
 
@@ -53,7 +53,7 @@ To get it started:
    ```sh
    npm install
    ```
-3. Enter the Profobuf repo in `package.json` on dependencies tab
+3. Enter the Profobuf repo in `package.json` on the dependencies tab
    ```js
        "grpc-protos": "git+REPOSITORY",
    ```
@@ -63,7 +63,7 @@ To get it started:
 ## Deployment
 The all microservices structure is supposed to be deployed using Docker Swarm. Below are the steps to achieve it correctly.
 
-1. Create network that hosts all the stack
+1. Create a network that hosts all the stack
     ```sh
     docker network create --driver=overlay --attachable RECNetwork
     ```
